@@ -7,12 +7,6 @@ def validate_amount(amount):
 
 def process_payment(amount, user_id):
 
-    if not user_id:
-        return {
-            "status": "error",
-            "message": "Missing user_id"
-        }
-
     if not validate_amount(amount):
         return {
             "status": "error",
