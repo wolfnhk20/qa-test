@@ -1,5 +1,5 @@
 def validate_amount(amount):
-    return amount > 0
+    return amount >= 0
 
 
 def process_payment(amount, user_id):
