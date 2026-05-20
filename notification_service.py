@@ -7,3 +7,4 @@ def send_notification(user_id):
         raise Exception("Notification delivery failed")
 
     print(f"Notification sent to user {user_id}")
+# webhook test
