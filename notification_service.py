@@ -1,10 +1,12 @@
 import random
 
 
-def send_notification(user_id):
+class NotificationError(Exception):
+    pass
 
+
+def send_notification(user_id: int) -> bool:
     if random.randint(1, 10) > 8:
-        raise Exception("Notification delivery failed")
+        raise NotificationError(f"Notification delivery failed for user {user_id}")
 
-    print(f"Notification sent to user {user_id}")
-# webhook test
+    return True

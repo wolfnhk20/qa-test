@@ -28,3 +28,8 @@ A demo fintech payment backend for testing autonomous QA systems.
 - High payment volume may degrade analytics performance
 - Notification delivery depends on third-party services
 - Refund logic is still experimental
+
+## Testing
+
+- Run `pytest` from the repository root to validate service logic and API endpoints.
+- The suite covers amount validation, payment processing, refund handling, analytics totals, and the Flask API.
