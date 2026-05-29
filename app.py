@@ -5,11 +5,30 @@ from analytics_service import generate_analytics
 from utils import generate_request_id
 
 app = Flask(__name__)
+app.config["JSON_SORT_KEYS"] = False
+
+
+def _json_error(message, status_code=400):
+    return jsonify({"status": "error", "message": message}), status_code
+
+
+def _parse_json_body():
+    if not request.is_json:
+        return None, _json_error("Request body must be JSON")
+
+    data = request.get_json(silent=True)
+    if data is None:
+        return None, _json_error("Invalid JSON payload")
+
+    return data, None
 
 
 @app.route("/payment", methods=["POST"])
 def payment():
-    data = request.get_json(silent=True) or {}
+    data, error = _parse_json_body()
+    if error:
+        return error
+
     result = process_payment(
         amount=data.get("amount"),
         user_id=data.get("user_id"),
@@ -20,9 +39,13 @@ def payment():
     status_code = 200 if result.get("status") == "success" else 400
     return jsonify(result), status_code
 
+
 @app.route("/refund", methods=["POST"])
 def refund():
-    data = request.get_json(silent=True) or {}
+    data, error = _parse_json_body()
+    if error:
+        return error
+
     result = process_refund(
         payment_id=data.get("payment_id"),
         amount=data.get("amount"),
@@ -35,9 +58,10 @@ def refund():
 
 @app.route("/analytics", methods=["GET"])
 def analytics():
-    start = request.args.get("start")
-    end = request.args.get("end")
-    result = generate_analytics(start_date=start, end_date=end)
+    result = generate_analytics(
+        start_date=request.args.get("start"),
+        end_date=request.args.get("end"),
+    )
     return jsonify(result), 200
 
 
@@ -46,9 +70,8 @@ def health():
     return jsonify({
         "status": "ok",
         "request_id": generate_request_id(),
-        "timestamp": request.environ.get("REQUEST_TIME", None),
     }), 200
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)
